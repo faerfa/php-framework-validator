@@ -1,6 +1,6 @@
 # php-framework-validator
 
-> 注意低于 php 8.0 无法运行
+> 注意低于 php 8.1 无法运行
 
 使用注解对数据进行验证
 
