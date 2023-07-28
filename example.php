@@ -1,35 +1,3 @@
-# php-framework-validator
-
-> 注意低于 php 8.0 无法运行
-
-使用注解对数据进行验证
-
-### 示例
-
-```php
-
-class SignUpParams
-{
-    /**
-     * 密码
-     * @var string
-     */
-    #[NotEmpty("邮箱不能为空")]
-    #[Email("邮箱格式不正确")]
-    public string $email;
-
-    /**
-     * 密码
-     * @var string
-     */
-    #[NotEmpty("密码不能为空")]
-    public string $password;
-
-}
-
-```
-
-```php
 <?php
 declare(strict_types=1);
 
@@ -78,6 +46,3 @@ try {
 } catch (ValidationException $e) {
     var_dump($e->getMessage());
 }
-
-
-```
