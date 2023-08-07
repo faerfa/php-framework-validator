@@ -7,6 +7,7 @@ use framework\validator\constraints\NotEmpty;
 use ReflectionAttribute;
 use ReflectionNamedType;
 use ReflectionObject;
+use ReflectionParameter;
 
 /**
  * 注解映射校验数据
@@ -19,7 +20,7 @@ class Validation
      *
      * @param object $object 需要被验证的对象
      */
-    public static function object(object $object): void
+    public static function object(object $object): object
     {
         $reflectionObject = new ReflectionObject($object);
 
@@ -59,13 +60,32 @@ class Validation
 
         }
 
+        return $object;
+
+    }
+
+    /**
+     * 验证给定的参数。
+     *
+     * 遍历参数的所有属性，对每个属性进行验证。
+     *
+     * @param ReflectionParameter $parameter 需要验证的参数
+     * @param mixed $value 参数的值
+     * @return mixed 验证后的值
+     */
+    public static function parameter(ReflectionParameter $parameter, mixed $value): mixed
+    {
+        foreach ($parameter->getAttributes() as $attribute) {
+            $value = self::validation($attribute, $parameter->name, $value);
+        }
+        return $value;
     }
 
     /**
      * 对给定的 ReflectionAttribute 进行验证
      *
      * @param ReflectionAttribute $attribute 需要被验证的 ReflectionAttribute
-     * @param string $name 字段名或变量名
+     * @param string $name 字段名或变量名，将被用于替换错误消息中的 {name}
      * @param mixed $value 验证的值
      * @return mixed 验证后的值
      * @throws ValidationException 如果验证失败
