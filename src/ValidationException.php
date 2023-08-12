@@ -6,7 +6,7 @@ namespace framework\validator;
 /**
  * 验证异常
  */
-class ValidationException extends \RuntimeException
+class ValidationException extends \ValueError
 {
     public function __construct(string $message)
     {

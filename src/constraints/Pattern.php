@@ -11,25 +11,25 @@ use framework\validator\ValidationException;
  * 用于验证一个值是否符合给定的正则表达式。
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER | Attribute::IS_REPEATABLE)]
-class Pattern implements Constraint
+readonly class Pattern implements Constraint
 {
     /**
      * 正则表达式
      * @var string
      */
-    private string $regexp;
+    public string $regexp;
 
     /**
      * 正则修饰符
      * @var string
      */
-    private string $modifier;
+    public string $modifier;
 
     /**
      * 提示信息
      * @var string
      */
-    private string $message;
+    public string $message;
 
     /**
      * Construct 正则表达式验证

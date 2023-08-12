@@ -14,14 +14,14 @@ use framework\validator\ValidationException;
  *
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
-class NotEmpty implements Constraint
+readonly class NotEmpty implements Constraint
 {
     /**
      * 如果验证失败，要显示的消息。
      *
      * @var string
      */
-    private string $message;
+    public string $message;
 
     /**
      * NotEmpty 构造函数。

@@ -9,7 +9,7 @@ use Attribute;
  * Email 校验类，用于验证一个值是否符合电子邮件地址的格式。
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
-class Email extends Pattern
+readonly class Email extends Pattern
 {
     /**
      * Email 校验

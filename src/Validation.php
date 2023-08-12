@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace framework\validator;
 
+use framework\validator\constraints\Condition;
 use framework\validator\constraints\NotEmpty;
-use ReflectionAttribute;
 use ReflectionNamedType;
 use ReflectionObject;
 use ReflectionParameter;
@@ -37,9 +37,23 @@ class Validation
                 $value = $reflectionProperty->getValue($object);
 
                 if ($type->isBuiltin()) {
+
                     foreach ($reflectionProperty->getAttributes() as $attribute) {
-                        $reflectionProperty->setValue($object, self::validation($attribute, $name, $value));
+
+                        $constraint = $attribute->newInstance();
+
+                        if (!$constraint instanceof Constraint) continue;
+
+                        if ($constraint instanceof Condition) {
+                            if (!$reflectionObject->hasProperty($constraint->name)) continue 2;
+                            if (!$reflectionObject->getProperty($constraint->name)->isInitialized($object)) continue 2;
+                            if (!$constraint->validation($name, $reflectionObject->getProperty($constraint->name)->getValue($object))) continue 2;
+                        }
+
+                        $value = $constraint->validation($name, $value);
+                        $reflectionProperty->setValue($object, $constraint->validation($name, $value));
                     }
+
                     if ($type->getName() == "array") {
                         foreach ($value as $item) {
                             if (is_object($item)) {
@@ -47,14 +61,18 @@ class Validation
                             }
                         }
                     }
+
                 } else {
                     self::object($value);
                 }
 
             } else {
 
-                if (empty($notEmpty = $reflectionProperty->getAttributes(NotEmpty::class))) continue;
-                self::validation(current($notEmpty), $name, "");
+                foreach ($reflectionProperty->getAttributes(NotEmpty::class) as $attribute) {
+                    $constraint = $attribute->newInstance();
+                    if (!$constraint instanceof Constraint) continue;
+                    $constraint->validation($name, "");
+                }
 
             }
 
@@ -76,29 +94,11 @@ class Validation
     public static function parameter(ReflectionParameter $parameter, mixed $value): mixed
     {
         foreach ($parameter->getAttributes() as $attribute) {
-            $value = self::validation($attribute, $parameter->name, $value);
-        }
-        return $value;
-    }
-
-    /**
-     * 对给定的 ReflectionAttribute 进行验证
-     *
-     * @param ReflectionAttribute $attribute 需要被验证的 ReflectionAttribute
-     * @param string $name 字段名或变量名，将被用于替换错误消息中的 {name}
-     * @param mixed $value 验证的值
-     * @return mixed 验证后的值
-     * @throws ValidationException 如果验证失败
-     */
-    private static function validation(ReflectionAttribute $attribute, string $name, mixed $value): mixed
-    {
-        $constraint = $attribute->newInstance();
-
-        if ($constraint instanceof Constraint) {
-            return $constraint->validation($name, $value);
+            $constraint = $attribute->newInstance();
+            if (!$constraint instanceof Constraint) continue;
+            $value = $constraint->validation($parameter->name, $value);
         }
 
         return $value;
     }
-
 }

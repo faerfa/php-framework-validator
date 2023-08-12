@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use framework\validator\constraints\Email;
+use framework\validator\constraints\Condition;
+use framework\validator\constraints\ConditionOperator;
 use framework\validator\constraints\NotEmpty;
+use framework\validator\constraints\Pattern;
 use framework\validator\Validation;
 use framework\validator\ValidationException;
 
@@ -20,12 +22,16 @@ spl_autoload_register(function ($class) {
 
 class SignUpParams
 {
+
+    public string $t = "1";
+
     /**
      * 密码
      * @var string
      */
-    #[NotEmpty]
-    #[Email]
+    #[Condition("t",ConditionOperator::EQUAL,"11")]
+    #[Pattern("^[A-Z0-9+_.-]+@[A-Z0-9.-]+$")]
+
     public string $email;
 
     /**
@@ -38,7 +44,7 @@ class SignUpParams
 }
 
 $signUpParams = new SignUpParams();
-$signUpParams->email = "";
+$signUpParams->email = "1";
 $signUpParams->password = "";
 
 try {
